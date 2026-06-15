@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Ethics Mock Board Exam | General Education 8</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f4f7fc;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 2rem 1rem;
+            color: #1e2a3e;
+        }
+
+        /* main container */
+        .quiz-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* scoreboard panel - fixed on desktop but relative for mobile */
+        .score-panel {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            padding: 1.2rem 1.8rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            backdrop-filter: blur(2px);
+            border: 1px solid #e2edf2;
+        }
+
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            align-items: baseline;
+        }
+
+        .stat {
+            background: #f0f6fa;
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .stat span {
+            color: #0f5c6b;
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-right: 0.3rem;
+        }
+
+        .score-badge {
+            background: #1e4a6e;
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .progress-section {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .progress-bar-bg {
+            background: #dce5ea;
+            border-radius: 40px;
+            height: 12px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .progress-fill {
+            background: #2c7da0;
+            width: 0%;
+            height: 100%;
+            border-radius: 40px;
+            transition: width 0.25s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-top: 0.4rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        /* question card */
+        .question-card {
+            background: white;
+            border-radius: 1.75rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.02);
+            padding: 1.5rem 1.8rem;
+            margin-bottom: 1.8rem;
+            transition: transform 0.1s ease, box-shadow 0.2s;
+            border: 1px solid #eef2f6;
+        }
+
+        .question-card:hover {
+            box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.1);
+        }
+
+        .q-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #0f2b3b;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .q-num {
+            background: #eef2fa;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1e5f7a;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            line-height: 1.45;
+            margin-bottom: 1.3rem;
+            color: #1e2f3c;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .option {
+            background: #f9fbfd;
+            border: 1.5px solid #e2edf2;
+            border-radius: 1rem;
+            padding: 0.8rem 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .option:hover {
+            background: #eef3fc;
+            border-color: #bcd0df;
+            transform: translateX(4px);
+        }
+
+        .option-prefix {
+            font-weight: 800;
+            background: #e4edf3;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 30px;
+            color: #1f5e7a;
+        }
+
+        .correct-highlight {
+            background: #c8f0e1 !important;
+            border-color: #2b7a4b !important;
+            box-shadow: 0 0 0 2px rgba(43, 122, 75, 0.2);
+        }
+
+        .incorrect-highlight {
+            background: #ffe1de !important;
+            border-color: #c23b22 !important;
+        }
+
+        .feedback-area {
+            margin-top: 0.8rem;
+            padding: 0.8rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: none;
+        }
+
+        .explanation-panel {
+            margin-top: 1rem;
+            background: #f0f5f9;
+            border-left: 6px solid #2c7da0;
+            padding: 1rem 1.2rem;
+            border-radius: 1rem;
+            display: none;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .explanation-panel strong {
+            color: #134b6b;
+        }
+
+        .explanation-panel .correct-answer-badge {
+            background: #d4e6f1;
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            margin: 0.3rem 0;
+            font-weight: 700;
+        }
+
+        .disabled-click {
+            pointer-events: none;
+            opacity: 0.9;
+        }
+
+        .locked-msg {
+            font-size: 0.75rem;
+            color: #6c8b9b;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        @media (max-width: 700px) {
+            .question-card {
+                padding: 1.2rem;
+            }
+            .stats {
+                gap: 0.8rem;
+            }
+            .score-panel {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: #5d7e92;
+        }
+        button {
+            background: none;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-container">
+    <!-- Scoreboard header -->
+    <div class="score-panel">
+        <div class="stats">
+            <div class="stat">✅ Correct: <span id="correctCount">0</span></div>
+            <div class="stat">❌ Incorrect: <span id="incorrectCount">0</span></div>
+            <div class="stat">📋 Answered: <span id="answeredCount">0</span>/<span id="totalQuestions">50</span></div>
+            <div class="score-badge" id="scorePercent">0%</div>
+        </div>
+        <div class="progress-section">
+            <div class="progress-bar-bg"><div class="progress-fill" id="progressFill"></div></div>
+            <div class="progress-text"><span>Completion</span><span id="progressPercentLabel">0%</span></div>
+        </div>
+    </div>
+
+    <div id="quizRoot"></div>
+    <footer>📘 Ethics Mock Exam — Double‑click any option to answer. Rationale & feedback appear instantly.</footer>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // 1. QUIZ DATA (50 questions from FTRC review, answer key based on provided file)
+    //    Includes: question text, options array, correct letter, detailed explanation.
+    //    All explanations include correct answer justification & why other options are incorrect.
+    // --------------------------------------------------------------
+    const quizData = [
+        { id:1, text:"Ethics comes from the Greek word 'ethos' which means:", options:["Reason","Custom or character","Duty","Happiness"], correct:"B", explanation:"Ethos refers to 'custom', 'character', or 'way of living' — the root of ethical study. Reason (logos), duty (deon), happiness (eudaimonia) are other philosophical terms." },
+        { id:2, text:"It is a study of the morality of human acts and moral agents:", options:["Logic","Ethics","Metaphysics","Epistemology"], correct:"B", explanation:"Ethics is the systematic study of right/wrong, human acts, and moral agents. Logic studies reasoning; metaphysics studies reality; epistemology studies knowledge." },
+        { id:3, text:"Any action of which a man is a master which he has the power of doing or not doing:", options:["Act of man","Human act","Reflex act","Natural act"], correct:"B", explanation:"Human act is deliberate, free, and done with knowledge. Act of man is involuntary (breathing). Reflex and natural acts are not morally accountable." },
+        { id:4, text:"Actions that merely happen in the body or through the body WITHOUT the intervention of the intellect or will:", options:["Human acts","Acts of man","Moral acts","Voluntary acts"], correct:"B", explanation:"Acts of man happen automatically (digestion, blinking). They lack moral responsibility because intellect/will are not involved." },
+        { id:5, text:"Which of the following is an example of an ACT OF MAN?", options:["Praying before meals","Breathing","Cheating in an exam","Helping a stranger"], correct:"B", explanation:"Breathing is automatic without conscious deliberation — act of man. Prayer, cheating, helping involve will/knowledge → human acts." },
+        { id:6, text:"Which of the following is an example of a HUMAN ACT?", options:["Blinking of the eyes","Digesting food","Preparing for the board exam","Heartbeat"], correct:"C", explanation:"Preparing for an exam requires intellect and free will — human act. Others are involuntary bodily processes." },
+        { id:7, text:"The branch of ethics that studies the foundations of morality itself:", options:["Normative Ethics","Applied Ethics","Metaethics","Consequentialism"], correct:"C", explanation:"Metaethics analyzes moral language, reality, and foundations (e.g., what 'good' means). Normative sets standards; applied deals with real issues." },
+        { id:8, text:"The branch of ethics concerned with establishing rules or standards of what is right, good, and proper:", options:["Metaethics","Normative Ethics","Applied Ethics","Moral Psychology"], correct:"B", explanation:"Normative Ethics proposes action-guiding theories (deontology, utilitarianism, virtue ethics). Metaethics is more abstract." },
+        { id:9, text:"The branch of ethics that attempts to apply ethical principles to real-life moral issues:", options:["Metaethics","Normative Ethics","Applied Ethics","Descriptive Ethics"], correct:"C", explanation:"Applied ethics tackles abortion, euthanasia, business ethics — practical moral problems." },
+        { id:10, text:"'Moral claims can be true or false, and some moral facts exist independently of human opinions.' This is the view of:", options:["Moral Anti-Realism","Moral Subjectivism","Moral Realism","Moral Nihilism"], correct:"C", explanation:"Moral realism holds objective moral facts. Anti-realism denies such objective truth; subjectivism ties truth to individual feelings." },
+        { id:11, text:"The belief that there are moral facts in the same way that there are scientific facts:", options:["Moral Relativism","Moral Absolutism","Moral Realism","Moral Anti-Realism"], correct:"C", explanation:"Moral realism parallels scientific realism — moral properties exist objectively. Relativism says moral truth varies across cultures." },
+        { id:12, text:"The view that some things are right or wrong regardless of circumstances or cultural context:", options:["Moral Relativism","Moral Absolutism","Moral Subjectivism","Cultural Relativism"], correct:"B", explanation:"Moral absolutism holds unchanging universal moral rules (e.g., 'murder is always wrong'). Relativism denies absolute principles." },
+        { id:13, text:"'Grievous violence is always wrong' and 'Nurturing children is always right' are examples of:", options:["Moral Relativism","Moral Absolutism","Moral Subjectivism","Moral Anti-Realism"], correct:"B", explanation:"Statements with 'always' reflect absolutist thinking — universal moral claims independent of context." },
+        { id:14, text:"The view that moral claims are NOT objective facts and there are NO moral facts:", options:["Moral Realism","Moral Absolutism","Moral Anti-Realism","Normative Ethics"], correct:"C", explanation:"Moral anti-realism (error theory, non-cognitivism) denies existence of objective moral properties. Realism affirms them." },
+        { id:15, text:"The claim that what is right depends on what an individual believes or feels:", options:["Cultural Relativism","Moral Subjectivism","Moral Absolutism","Moral Realism"], correct:"B", explanation:"Subjectivism grounds morality in personal attitudes. Cultural relativism appeals to society's norms." },
+        { id:16, text:"'More than one moral position on a given topic can be correct.' This describes:", options:["Moral Absolutism","Normative Cultural Relativism","Descriptive Cultural Relativism","Moral Subjectivism"], correct:"B", explanation:"Normative cultural relativism suggests that different moral frameworks can be equally valid; descriptive relativism just observes differences." },
+        { id:17, text:"Standards concerned with rules and principles of right and wrong:", options:["Non-moral standards","Moral standards","Legal standards","Social standards"], correct:"B", explanation:"Moral standards evaluate actions as right/wrong. Non-moral standards (etiquette, aesthetics) lack moral weight." },
+        { id:18, text:"Standards that are guides of action expected by society such as rules of etiquette and good manners:", options:["Moral standards","Non-moral standards","Ethical standards","Professional standards"], correct:"B", explanation:"Etiquette, fashion, manners = non-moral standards. They are social conventions, not moral obligations." },
+        { id:19, text:"In sociology, non-moral standards or rules are called:", options:["Mores","Laws","Folkways","Customs"], correct:"C", explanation:"Folkways are everyday customs & conventions (dress, table manners). Mores are moral norms with serious sanctions." },
+        { id:20, text:"The view that an action is right if it produces the greatest good for the greatest number:", options:["Deontology","Utilitarianism","Virtue Ethics","Natural Law"], correct:"B", explanation:"Utilitarianism (consequentialist) measures morality by maximizing overall happiness. Deontology focuses on duties." },
+        { id:21, text:"Which of the following is a CONSEQUENTIAL ethical theory?", options:["Kantian Ethics","Utilitarianism","Divine Command Theory","Natural Law"], correct:"B", explanation:"Utilitarianism judges acts by outcomes. Kantian ethics is non-consequentialist (duty-based)." },
+        { id:22, text:"Which of the following is a NON-CONSEQUENTIAL ethical theory?", options:["Act Utilitarianism","Rule Utilitarianism","Deontology","Hedonism"], correct:"C", explanation:"Deontology (Kant) says actions are right/wrong based on rules & duties, not consequences. Utilitarianism is consequentialist." },
+        { id:23, text:"The founder of utilitarianism:", options:["Immanuel Kant","Aristotle","Jeremy Bentham","St. Thomas Aquinas"], correct:"C", explanation:"Jeremy Bentham developed classical utilitarianism (hedonic calculus). Mill refined later." },
+        { id:24, text:"He believed that happiness is quantified by pleasure and pain:", options:["John Stuart Mill","Jeremy Bentham","Immanuel Kant","Aristotle"], correct:"B", explanation:"Bentham's quantitative hedonism: intensity & duration of pleasure. Mill introduced qualitative higher/lower pleasures." },
+        { id:25, text:"He developed the qualitative distinction between higher and lower pleasures:", options:["Jeremy Bentham","Immanuel Kant","John Stuart Mill","Aristotle"], correct:"C", explanation:"John Stuart Mill argued intellectual pleasures (higher) are superior to mere physical ones, distinguishing quality from quantity." },
+        { id:26, text:"One who performs an act in accordance with moral standards:", options:["Moral subject","Moral agent","Moral patient","Moral object"], correct:"B", explanation:"Moral agent = rational being capable of moral responsibility. Moral patient receives moral consideration." },
+        { id:27, text:"For an act to be morally accountable, it must be done:", options:["Knowingly, freely, and voluntarily","Quickly and efficiently","According to tradition","With parental consent"], correct:"A", explanation:"Three conditions: knowledge, freedom, voluntariness. Lack of any reduces/removes responsibility." },
+        { id:28, text:"An act is NOT a moral act if it is done involuntarily:", options:["True","False"], correct:"A", explanation:"True: moral acts require voluntariness. Involuntary actions (compulsion) lack full moral accountability." },
+        { id:29, text:"The type of ignorance which CANNOT be cleared up or dispelled:", options:["Vincible ignorance","Invincible ignorance","Affected ignorance","Crass ignorance"], correct:"B", explanation:"Invincible ignorance is unavoidable (e.g., lack of access to truth). Vincible ignorance could be overcome with reasonable effort." },
+        { id:30, text:"Ignorance that CAN be acquired by ordinary effort but was not acquired due to negligence:", options:["Invincible ignorance","Vincible ignorance","Inevitable ignorance","Natural ignorance"], correct:"B", explanation:"Vincible ignorance is culpable when one fails to rectify it. Affected ignorance is deliberate pretending to be ignorant." },
+        { id:31, text:"When a person positively wants to be ignorant in order to plead innocent to a charge:", options:["Invincible ignorance","Vincible ignorance","Affected/Pretended ignorance","Simple ignorance"], correct:"C", explanation:"Affected ignorance is willful avoidance of truth to escape responsibility; increases moral culpability." },
+        { id:32, text:"Which modifier refers to strong tendencies toward possession of something good or avoidance of something evil?", options:["Ignorance","Passion/Concupiscence","Fear","Violence"], correct:"B", explanation:"Passion (concupiscence) includes emotions like lust, anger, fear. It can lessen or increase voluntariness depending on antecedence." },
+        { id:33, text:"Passions that arise spontaneously BEFORE the judgment of reason and before the will can control:", options:["Consequent passions","Antecedent passions","Deliberate passions","Rational passions"], correct:"B", explanation:"Antecedent passions come before rational control (e.g., sudden rage). Consequent passions are deliberately aroused." },
+        { id:34, text:"Passions that are deliberately aroused by the will to ensure more prompt operation:", options:["Antecedent passions","Consequent passions","Natural passions","Accidental passions"], correct:"B", explanation:"Consequent passions follow an act of will (e.g., stoking anger to act bravely). They increase responsibility." },
+        { id:35, text:"Antecedent passions may completely destroy freedom and moral responsibility:", options:["True","False"], correct:"A", explanation:"True: intense antecedent passion (like sudden terror) can impair reason, reducing or removing freedom." },
+        { id:36, text:"Fear is defined as:", options:["A bodily appetite","A disturbance of the mind caused by the thought of a threatening evil","Strong enthusiasm for something","An external force compelling action"], correct:"B", explanation:"Fear is mental disturbance due to perceived future evil. It can affect voluntariness but not always annul it." },
+        { id:37, text:"Acts done WITH or IN SPITE of fear are always:", options:["Involuntary","Voluntary","Neutral","Accidental"], correct:"B", explanation:"Acts done due to fear (e.g., jettison cargo in storm) are still voluntary because the agent chooses to act (simply conditioned by fear)." },
+        { id:38, text:"Violence or compulsion is the application of external force to compel someone to act against their will:", options:["True","False"], correct:"A", explanation:"True: violence (vis) uses external physical force. Acts purely under violence are involuntary if will does not consent." },
+        { id:39, text:"Human acts resulting from violence are:", options:["Voluntary by themselves","Involuntary by themselves","Always moral","Never punishable"], correct:"B", explanation:"Acts directly from external force without consent are involuntary per se. If will resists, no moral accountability." },
+        { id:40, text:"Which modifier is a constant and easy way of doing things acquired by repetition?", options:["Passion","Habit","Fear","Ignorance"], correct:"B", explanation:"Habit (habitus) inclines a person to act in specific ways through repetition, affecting moral character." },
+        { id:41, text:"According to the received axiom, for an act to be morally good, the three determinants must be:", options:["Legal, traditional, and cultural","Without flaw","Approved by the majority","Based on personal preference"], correct:"B", explanation:"The three determinants (object, end, circumstances) must be entirely good; any flaw makes the act morally bad." },
+        { id:42, text:"The three determinants of morality are:", options:["Knowledge, freedom, and voluntariness","Object of the act, end/purpose, and circumstances","Ignorance, passion, and fear","Agent, action, and consequence"], correct:"B", explanation:"Object (what), intention (why), circumstances (who, where, how) jointly determine moral quality." },
+        { id:43, text:"For Aristotle, the highest purpose and ultimate good of man is:", options:["Wealth","Pleasure","Eudaimonia (happiness/flourishing)","Power"], correct:"C", explanation:"Eudaimonia is living well and doing well in accordance with virtue, not momentary pleasure or riches." },
+        { id:44, text:"The Greek term for the end or purpose of an action:", options:["Eudaimonia","Telos","Arete","Phronesis"], correct:"B", explanation:"Telos = end/goal. Arete = virtue/excellence; Phronesis = practical wisdom." },
+        { id:45, text:"In Aristotle's virtue ethics, virtue is the middle point between two extremes called:", options:["Principles","Vices","Duties","Maxims"], correct:"B", explanation:"Virtue is the mean between two vices (excess & deficiency). For courage, cowardice (deficiency) and recklessness (excess)." },
+        { id:46, text:"For Aristotle, courage is the midpoint between cowardice and:", options:["Foolishness","Recklessness","Pride","Temperance"], correct:"B", explanation:"Courage's extremes: cowardice (too little fear) and recklessness (too much rashness)." },
+        { id:47, text:"Practical wisdom in Aristotle's ethics is called:", options:["Arete","Phronesis","Eudaimonia","Telos"], correct:"B", explanation:"Phronesis = practical reasoning to discern virtuous action. Arete = virtue." },
+        { id:48, text:"According to St. Thomas Aquinas, natural law is:", options:["The law of God revealed through human reason","Only found in the Bible","Created by government","Based on emotions"], correct:"A", explanation:"Natural law is rational participation in eternal law, discoverable by human reason. It’s universal moral knowledge." },
+        { id:49, text:"The types of law in St. Thomas Aquinas' theory include all EXCEPT:", options:["Eternal Law","Divine Law","Natural Law","Scientific Law"], correct:"D", explanation:"Aquinas' fourfold division: Eternal, Divine (revealed), Natural, Human law. Scientific law is unrelated." },
+        { id:50, text:"Kant's supreme principle of morality is known as:", options:["The Principle of Utility","The Categorical Imperative","The Golden Mean","Natural Law"], correct:"B", explanation:"Categorical Imperative (act only on maxims that could be universal law). Utility is Bentham/Mill, Golden Mean = Aristotle." }
+    ];
+
+    // Validate correct letters against answer key from source (all aligned)
+    // Initialize global counters
+    let answeredStatus = new Array(50).fill(false);
+    let selectedAnswerLetter = new Array(50).fill(null);
+    let correctAnswersCount = 0;
+    let incorrectCount = 0;
+    let totalAnswered = 0;
+
+    // DOM elements
+    const quizRoot = document.getElementById("quizRoot");
+    const correctSpan = document.getElementById("correctCount");
+    const incorrectSpan = document.getElementById("incorrectCount");
+    const answeredSpan = document.getElementById("answeredCount");
+    const scorePercentSpan = document.getElementById("scorePercent");
+    const progressFill = document.getElementById("progressFill");
+    const progressPercentLabel = document.getElementById("progressPercentLabel");
+
+    // Audio context for sound effects (user-gesture activated)
+    let audioCtx = null;
+    function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    function playBeep(type) {
+        try {
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+            if (type === 'correct') {
+                osc.frequency.value = 880;
+                osc.start();
+                osc.stop(now + 0.35);
+            } else {
+                osc.frequency.value = 440;
+                osc.start();
+                osc.stop(now + 0.4);
+            }
+        } catch(e) { console.warn("Audio not supported"); }
+    }
+
+    // update global score UI
+    function updateStats() {
+        correctSpan.innerText = correctAnswersCount;
+        incorrectSpan.innerText = incorrectCount;
+        answeredSpan.innerText = totalAnswered;
+        const percent = totalAnswered === 0 ? 0 : Math.round((correctAnswersCount / totalAnswered) * 100);
+        scorePercentSpan.innerText = `${percent}%`;
+        const overallPercent = totalAnswered === 0 ? 0 : Math.round((totalAnswered / 50) * 100);
+        progressFill.style.width = `${overallPercent}%`;
+        progressPercentLabel.innerText = `${overallPercent}%`;
+        if (totalAnswered === 50) showFinalSummary(percent);
+    }
+
+    function showFinalSummary(finalPercent) {
+        let message = "";
+        if (finalPercent >= 90) message = "🏆 Excellent! Masterful performance.";
+        else if (finalPercent >= 75) message = "🎉 Very Good! Strong ethical foundation.";
+        else if (finalPercent >= 50) message = "👍 Good. Review key concepts to improve.";
+        else message = "📚 Needs Improvement. Study the determinants and frameworks again.";
+        setTimeout(() => {
+            alert(`🎓 QUIZ COMPLETE 🎓\nTotal: 50 | Correct: ${correctAnswersCount} | Incorrect: ${incorrectCount}\nPercentage: ${finalPercent}%\n${message}`);
+        }, 100);
+    }
+
+    // Render all questions dynamically
+    function renderQuiz() {
+        quizRoot.innerHTML = "";
+        quizData.forEach((q, idx) => {
+            const card = document.createElement("div");
+            card.className = "question-card";
+            card.setAttribute("data-qid", idx);
+            card.setAttribute("data-answered", "false");
+            card.setAttribute("data-correct", q.correct);
+
+            // question header
+            const titleDiv = document.createElement("div");
+            titleDiv.className = "q-title";
+            titleDiv.innerHTML = `<span class="q-num">Question ${q.id}</span>`;
+            const qTextDiv = document.createElement("div");
+            qTextDiv.className = "question-text";
+            qTextDiv.innerText = q.text;
+            titleDiv.appendChild(qTextDiv);
+
+            // options
+            const optsDiv = document.createElement("div");
+            optsDiv.className = "options-list";
+            const optionLetters = ['A','B','C','D'];
+            q.options.forEach((optText, optIdx) => {
+                const letter = optionLetters[optIdx];
+                const optElement = document.createElement("div");
+                optElement.className = "option";
+                optElement.setAttribute("data-letter", letter);
+                optElement.innerHTML = `<span class="option-prefix">${letter}</span><span>${optText}</span>`;
+                optElement.addEventListener("dblclick", (e) => {
+                    e.stopPropagation();
+                    handleAnswer(idx, letter, optElement);
+                });
+                optsDiv.appendChild(optElement);
+            });
+
+            // feedback area (small message)
+            const feedbackDiv = document.createElement("div");
+            feedbackDiv.className = "feedback-area";
+            // explanation panel
+            const explanationDiv = document.createElement("div");
+            explanationDiv.className = "explanation-panel";
+
+            card.appendChild(titleDiv);
+            card.appendChild(optsDiv);
+            card.appendChild(feedbackDiv);
+            card.appendChild(explanationDiv);
+            quizRoot.appendChild(card);
+        });
+    }
+
+    function handleAnswer(qIndex, selectedLetter, targetElement) {
+        const card = document.querySelector(`.question-card[data-qid="${qIndex}"]`);
+        if (!card || card.getAttribute("data-answered") === "true") return;
+
+        const correctLetter = quizData[qIndex].correct;
+        const isCorrect = (selectedLetter === correctLetter);
+        const allOptions = card.querySelectorAll(".option");
+        const feedbackDiv = card.querySelector(".feedback-area");
+        const explanationDiv = card.querySelector(".explanation-panel");
+        const questionObj = quizData[qIndex];
+
+        // lock question
+        card.setAttribute("data-answered", "true");
+        answeredStatus[qIndex] = true;
+        totalAnswered++;
+        if (isCorrect) {
+            correctAnswersCount++;
+            playBeep('correct');
+            feedbackDiv.style.display = "block";
+            feedbackDiv.style.background = "#dcfce7";
+            feedbackDiv.style.color = "#14532d";
+            feedbackDiv.innerHTML = "✅ Correct! Great job.";
+            // highlight selected option green
+            targetElement.classList.add("correct-highlight");
+        } else {
+            incorrectCount++;
+            playBeep('incorrect');
+            feedbackDiv.style.display = "block";
+            feedbackDiv.style.background = "#ffe6e5";
+            feedbackDiv.style.color = "#9b2c1d";
+            feedbackDiv.innerHTML = `❌ Incorrect. The correct answer is ${correctLetter}.`;
+            // highlight wrong choice red
+            targetElement.classList.add("incorrect-highlight");
+            // additionally highlight correct answer option in green
+            allOptions.forEach(opt => {
+                if (opt.getAttribute("data-letter") === correctLetter) {
+                    opt.classList.add("correct-highlight");
+                }
+            });
+        }
+
+        // show detailed explanation / rationale
+        let rationaleHtml = `<strong>✓ Correct answer: ${correctLetter}</strong><br><div class="correct-answer-badge">${questionObj.options[correctLetter.charCodeAt(0)-65]}</div><br>`;
+        rationaleHtml += `<strong>📖 Explanation:</strong> ${questionObj.explanation}<br><br>`;
+        rationaleHtml += `<strong>❓ Why others are wrong:</strong><ul style="margin-left:1.2rem; margin-top:0.3rem;">`;
+        const letters = ['A','B','C','D'];
+        letters.forEach(l => {
+            if (l !== correctLetter) {
+                const optText = questionObj.options[l.charCodeAt(0)-65];
+                rationaleHtml += `<li>Option ${l}: ${optText} — ${getDistractorReason(questionObj, l)}</li>`;
+            }
+        });
+        rationaleHtml += `</ul>`;
+        explanationDiv.innerHTML = rationaleHtml;
+        explanationDiv.style.display = "block";
+
+        // disable double-clicks on all options for this card
+        allOptions.forEach(opt => opt.style.pointerEvents = "none");
+
+        // update global scoreboard
+        updateStats();
+
+        // check if all answered and show summary if needed
+        if (totalAnswered === 50) {
+            const finalPer = Math.round((correctAnswersCount / 50) * 100);
+            showFinalSummary(finalPer);
+        }
+    }
+
+    // dynamic but contextual reason for distractors based on question content
+    function getDistractorReason(question, letter) {
+        const mapSimple = {
+            A:"Does not align with the core definition/framework.",
+            B:"Incorrect based on the standard normative distinction.",
+            C:"Misrepresents the philosophical concept.",
+            D:"Contradicts the foundational ethical principle."
+        };
+        if (question.id === 1 && letter === 'A') return "Reason translates to 'logos', not ethos.";
+        if (question.id === 3 && letter === 'A') return "Act of man lacks deliberate control, while human act requires mastery.";
+        if (question.id === 20 && letter === 'A') return "Deontology focuses on duties, not outcomes.";
+        if (question.id === 43 && letter === 'B') return "Pleasure is not the highest good for Aristotle (hedonism rejected).";
+        if (question.id === 48 && letter === 'B') return "Natural law is accessible by reason, not only scripture.";
+        if (question.id === 49 && letter === 'A' || letter === 'B' || letter ==='C') return "Scientific law is not part of Aquinas’ moral-legal taxonomy.";
+        return mapSimple[letter] || "This distractor does not match the correct moral theory or definition.";
+    }
+
+    // initialize rendering
+    renderQuiz();
+    updateStats();
+    // pre-touch to prepare audio on any click anywhere (user interaction activates)
+    document.body.addEventListener("click", () => { if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); }, { once: true });
+</script>
+</body>
+</html>
